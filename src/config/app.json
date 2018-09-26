@@ -1,7 +1,8 @@
 {
     "discourseUrl": "https://safenetforum.org",
     "trustLevel": 1,
-    "mongo": "mongodb://localhost/invites_manager",
+    "isMaidsafeOnly": false,
+    "mongo": "mongodb://localhost/crustnet",
     "authConfirmURL": "/auth/success",
     "superAdmins": [
         "krishna.kumar@maidsafe.net",

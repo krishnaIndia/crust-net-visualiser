@@ -2,7 +2,6 @@ import { Document, Schema, Model, model} from "mongoose";
 import { ConnectionLog } from "./../types/Apptypes";
 
 export interface IConnectionLog extends ConnectionLog, Document {
-    insert() : Promise<void>;
 }
 
 export const ConnectionLogSchema: Schema = new Schema({
@@ -22,11 +21,20 @@ ConnectionLogSchema.pre("save", function(next: Function) {
     next();
 });
 
-ConnectionLogSchema.methods.insert = () => {
-    return new Promise((resolve, reject) => {
-        this.save((err: Error) => err ? reject(err) : resolve());
-    });
-};
-
 const ConnectionLogModel: Model<IConnectionLog> = model<IConnectionLog>("ConnectionLog", ConnectionLogSchema);
-export default ConnectionLogModel;
+class ConnectionLogService {
+    insert(log: ConnectionLog): Promise<void> {
+        return new Promise((resolve, reject) => {
+            ConnectionLogModel.insertMany([log], (err: Error) => err ? reject(err) : resolve());
+        });
+    }
+
+    list(): Promise<Array<ConnectionLog>> {
+        return new Promise((resolve, reject) => {
+            ConnectionLogModel.find({}, (err: Error, logs: Array<ConnectionLog>) => err ? reject(err) : resolve(logs));
+        });
+    }
+}
+
+const connectionLogService = new ConnectionLogService;
+export default connectionLogService;
