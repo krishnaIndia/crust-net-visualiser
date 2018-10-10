@@ -93,14 +93,19 @@ app.get("/", function (req, res) {
 app.use("/auth/discourse", discourseRouter);
 app.get("/auth/success", homeController.success);
 
-app.get("/api/profile", (req, res) => {
-  if (!req.session && !req.session.user) {
-    return res.sendStatus(401);
+app.get("/api/profile", async (req, res) => {
+  try {
+    if (!req.session && !req.session.user) {
+      return res.sendStatus(401);
+    }
+    const user = await userService.findbyId(req.session.user.userId);
+    req.session.user.cip = getClientIp(req);
+    req.session.user.ip = user.ip || "";
+    res.send(req.session.user);
   }
-  const cip = getClientIp(req);
-  req.session.user.ip = req.session.user.ip || "";
-  req.session.user.cip = cip;
-  res.send(req.session.user);
+  catch (e) {
+    res.send(e);
+  }
 });
 
 app.get("/api/updateIp", async (req, res) => {
@@ -109,18 +114,16 @@ app.get("/api/updateIp", async (req, res) => {
       return res.sendStatus(401);
     }
     const user = req.session.user;
-    user.ip = req.session.user.cip;
     await userService.upsert({
       userId: user.userId,
       userName: user.userName,
-      ip: user.cip,
+      ip: getClientIp(req),
       trustLevel: user.trustLevel,
       email: user.email,
       strategy: user.strategy
     });
-    req.session.user.ip = user.cip;
     await updateIpFile();
-    return res.sendStatus(200);
+    res.sendStatus(200);
   } catch (e) {
     res.send(e);
   }

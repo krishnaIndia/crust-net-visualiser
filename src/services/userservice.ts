@@ -7,7 +7,6 @@ class UserService {
     public upsert(user: User): Promise<void> {
         return new Promise((resolve, reject) => {
             const opts = { upsert: true, new: true, setDefaultsOnInsert: true };
-            user.ip = user.ip || "";
             UserModel.findOneAndUpdate({ userId: user.userId }, user, opts, (err: Error) => {
                 err ? reject(err) : resolve();
             });
