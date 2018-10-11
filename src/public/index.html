@@ -57,8 +57,9 @@
                     <th colspan="3">Peer Requester</th>
                     <th colspan="3">Peer Responder</th>
                     <th rowspan="2">TCP HP</th>
-                    <th rowspan="2">utp HP</th>
-                    <th rowspan="2">Direct</th>
+                    <th rowspan="2">udp HP</th>
+                    <!-- <th rowspan="2">utp HP</th> -->
+                    <!-- <th rowspan="2">Direct</th> -->
                     <th rowspan="2">Hairpinned</th>
                 </tr>
                 <tr>
@@ -108,8 +109,9 @@
                         natTypeString(json.peer_responder.nat_type),
                         json.peer_responder.os,
                         ConnectionDataString(json.tcp_hole_punch_result),
-                        ConnectionDataString(json.utp_hole_punch_result),
-                        json.is_direct_successful,
+                        ConnectionDataString(json.udp_hole_punch_result),
+                        // ConnectionDataString(json.utp_hole_punch_result),
+                        // json.is_direct_successful,
                         json[i].isHairpinned == undefined ? "N/A" : json[i].isHairpinned
                     ]);
                 }
@@ -174,8 +176,9 @@
                         natTypeString(json[i].peer_responder.nat_type),
                         json[i].peer_responder.os,
                         ConnectionDataString(json[i].tcp_hole_punch_result),
-                        ConnectionDataString(json[i].utp_hole_punch_result),
-                        json[i].is_direct_successful,
+                        ConnectionDataString(json[i].udp_hole_punch_result),
+                        // ConnectionDataString(json[i].utp_hole_punch_result),
+                        // json[i].is_direct_successful,
                         json[i].isHairpinned == undefined ? "N/A" : json[i].isHairpinned
                     ]);
                 }

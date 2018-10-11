@@ -10,6 +10,7 @@ export const ConnectionLogSchema = new Schema({
     is_direct_successful: Boolean,
     utp_hole_punch_result: Object,
     tcp_hole_punch_result: Object,
+    utd_hole_punch_result: Object,
     logDataHash: String,
     isHairpinned: Boolean,
     createdAt: Date
