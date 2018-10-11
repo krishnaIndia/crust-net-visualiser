@@ -57,7 +57,7 @@
                     <th colspan="3">Peer Requester</th>
                     <th colspan="3">Peer Responder</th>
                     <th rowspan="2">TCP HP</th>
-                    <th rowspan="2">udp HP</th>
+                    <th rowspan="2">UDP HP</th>
                     <!-- <th rowspan="2">utp HP</th> -->
                     <!-- <th rowspan="2">Direct</th> -->
                     <th rowspan="2">Hairpinned</th>
@@ -82,8 +82,13 @@
 <script>
     var datatable = $('#table').dataTable();
 
-    $(document).ready(function () {
+    $.fn.dataTable.ext.errMode = 'none';
 
+    datatable.on('error.dt', function (e, settings, techNote, message) {
+        console.log('An error has been reported by DataTables: ', message);
+    });
+
+    $(document).ready(function () {
 
         fetchData();
 
@@ -97,7 +102,7 @@
             };
 
             ws.onmessage = function (evt) {
-                alert("Message is received...");
+                console.log("WS: " + evt.data);
                 if (evt.data.includes("peer_requester")) {
                     var json = JSON.parse(evt.data);
                     datatable.fnAddData([
@@ -139,6 +144,7 @@
     });
 
     function ConnectionDataString(connectiondata) {
+        if (connectiondata == undefined) return "N/A";
         if (connectiondata.Succeeded != undefined)
             return connectiondata.Succeeded.time_spent.secs + " sec";
         else
