@@ -2,8 +2,9 @@ import userService from "../services/userservice";
 import fs from "fs";
 import { ConnectionLog, GeoInfo } from "../types/AppTypes";
 import crypto from "crypto";
-const iplocation = require("iplocation");
+const ipApi = require("ipapi.co");
 const config = require("../config/app.json");
+const cred = require("../config/cred.json");
 
 const getClientIp = (req: any) => {
     const ip = (req.headers["x-forwarded-for"] || req.connection.remoteAddress || "").split(",")[0].trim();
@@ -39,10 +40,11 @@ const generateLogHash = (log: ConnectionLog): string => {
 
 const getGeoInfoFromIp = (ip: string): Promise<GeoInfo> => {
     return new Promise((resolve, reject) => {
-        iplocation(ip, function (error: any, res: any) {
+        const cb = (res: any, error: any) => {
             if (error) reject(error);
             resolve(res);
-        });
+        };
+        ipApi.location(cb, ip, cred.ipApiSecret);
     });
 };
 
