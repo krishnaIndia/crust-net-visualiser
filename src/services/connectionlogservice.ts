@@ -14,6 +14,10 @@ class ConnectionLogService {
         "-peer_responder.geo_info.region -peer_responder.geo_info.region_code -peer_responder.geo_info.country " +
         "-peer_responder.geo_info.in_eu -peer_responder.geo_info.asn -peer_responder.geo_info.country_calling_code -peer_responder.geo_info.currency ";
 
+    isHairpinnedCondition: any = { "isHairpinned": { "$in": ["false", false] } };
+
+    projectOptions: any = { _id: 0, __v: 0 };
+
     insert(log: ConnectionLog): Promise<void> {
         return new Promise((resolve, reject) => {
             ConnectionLogModel.insertMany([log], (err: Error) => err ? reject(err) : resolve());
@@ -22,7 +26,15 @@ class ConnectionLogService {
 
     list(): Promise<Array<ConnectionLog>> {
         return new Promise((resolve, reject) => {
-            ConnectionLogModel.find({ "isHairpinned": { "$in": ["false", false] } }, { _id: 0, __v: 0 }, (err: Error, logs: Array<ConnectionLog>) => err ? reject(err) : resolve(logs))
+            ConnectionLogModel.find(this.isHairpinnedCondition, this.projectOptions, (err: Error, logs: Array<ConnectionLog> = new Array) => {
+                if (err) return reject(err);
+
+                logs.forEach((log) => {
+                    log = this.finalizeLogItem(log);
+                });
+
+                resolve(logs);
+            })
                 .sort("-createdAt")
                 .select(this.ignoreFields);
         });
@@ -30,7 +42,16 @@ class ConnectionLogService {
 
     listBetweenDates(startDate: Date, endDate: Date): Promise<Array<ConnectionLog>> {
         return new Promise((resolve, reject) => {
-            ConnectionLogModel.find({ "createdAt": { "$gte": startDate, "$lt": endDate }, "isHairpinned": { "$in": ["false", false] } }, { _id: 0, __v: 0 }, (err: Error, logs: Array<ConnectionLog>) => err ? reject(err) : resolve(logs))
+            ConnectionLogModel.find({ "createdAt": { "$gte": startDate, "$lt": endDate }, "isHairpinned": { "$in": ["false", false] } },
+                this.projectOptions, (err: Error, logs: Array<ConnectionLog> = new Array) => {
+                    if (err) return reject(err);
+
+                    logs.forEach((log) => {
+                        log = this.finalizeLogItem(log);
+                    });
+
+                    resolve(logs);
+                })
                 .sort("-createdAt")
                 .select(this.ignoreFields);
         });
@@ -43,24 +64,20 @@ class ConnectionLogService {
                 limit: size
             };
             let totalPages = 0;
-            ConnectionLogModel.count({ "isHairpinned": { "$in": ["false", false] } }, function (err, totalCount) {
+            ConnectionLogModel.count(this.isHairpinnedCondition, function (err, totalCount) {
                 if (err) {
-                    reject(err);
+                    return reject(err);
                 }
                 totalPages = Math.ceil(totalCount / size);
             });
-            ConnectionLogModel.find({ "isHairpinned": { "$in": ["false", false] } }, { _id: 0, __v: 0 }, query, function (err, data) {
+
+            ConnectionLogModel.find(this.isHairpinnedCondition, this.projectOptions, query, (err: Error, data: Array<ConnectionLog> = new Array) => {
                 if (err) {
-                    reject(err);
+                    return reject(err);
                 } else {
-                    data.forEach(function (item) {
-                        if (typeof item.peer_requester.nat_type === "object") {
-                            item.peer_requester.nat_type = "EDM_RANDOM";
-                        }
-                        if (typeof item.peer_responder.nat_type === "object") {
-                            item.peer_responder.nat_type = "EDM_RANDOM";
-                        }
-                        item.logDataHash = item.logDataHash.substr(0, 6);
+
+                    data.forEach((item) => {
+                        item = this.finalizeLogItem(item);
                     });
 
                     const res: PaginateResponse = {
@@ -75,12 +92,22 @@ class ConnectionLogService {
     }
 
     getPossibleDuplicate(log: ConnectionLog): Promise<Boolean> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             ConnectionLogModel.count({ "logDataHash": log.logDataHash }, function (err, c) {
                 c > 0 ? resolve(true) : resolve(false);
             });
         });
+    }
 
+    finalizeLogItem(log: ConnectionLog): ConnectionLog {
+        if (typeof log.peer_requester.nat_type === "object") {
+            log.peer_requester.nat_type = "EDM_RANDOM";
+        }
+        if (typeof log.peer_responder.nat_type === "object") {
+            log.peer_responder.nat_type = "EDM_RANDOM";
+        }
+        log.logDataHash = log.logDataHash.substr(0, 6);
+        return log;
     }
 }
 
