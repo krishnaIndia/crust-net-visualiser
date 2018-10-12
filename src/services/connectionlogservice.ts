@@ -40,23 +40,24 @@ class ConnectionLogService {
                 skip: size * (pageNo - 1),
                 limit: size
             };
+            let totalPages = 0;
             ConnectionLogModel.count({ "isHairpinned": { "$in": ["false", false] } }, function (err, totalCount) {
                 if (err) {
                     reject(err);
                 }
-                const totalPages = Math.ceil(totalCount / size);
-                ConnectionLogModel.find({ "isHairpinned": { "$in": ["false", false] } }, { _id: 0, __v: 0 }, query, function (err, data) {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        const res: PaginateResponse = {
-                            logs: data,
-                            totalPages: totalPages
-                        };
-                        resolve(res);
-                    }
-                });
+                totalPages = Math.ceil(totalCount / size);
             });
+            ConnectionLogModel.find({ "isHairpinned": { "$in": ["false", false] } }, { _id: 0, __v: 0 }, query, function (err, data) {
+                if (err) {
+                    reject(err);
+                } else {
+                    const res: PaginateResponse = {
+                        logs: data,
+                        totalPages: totalPages
+                    };
+                    resolve(res);
+                }
+            }).select(this.ignoreFields);
         });
     }
 
