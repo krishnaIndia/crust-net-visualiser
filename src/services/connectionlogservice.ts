@@ -53,10 +53,21 @@ class ConnectionLogService {
                 if (err) {
                     reject(err);
                 } else {
+                    data.forEach(function (item) {
+                        if (typeof item.peer_requester.nat_type === "object") {
+                            item.peer_requester.nat_type = "EDM_RANDOM";
+                        }
+                        if (typeof item.peer_responder.nat_type === "object") {
+                            item.peer_responder.nat_type = "EDM_RANDOM";
+                        }
+                        item.logDataHash = item.logDataHash.substr(0, 6);
+                    });
+
                     const res: PaginateResponse = {
                         logs: data,
                         totalPages: totalPages
                     };
+
                     resolve(res);
                 }
             }).select(this.ignoreFields);
