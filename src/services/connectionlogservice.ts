@@ -92,8 +92,9 @@ class ConnectionLogService {
     }
 
     getPossibleDuplicate(log: ConnectionLog): Promise<Boolean> {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             ConnectionLogModel.count({ "logDataHash": log.logDataHash }, function (err, c) {
+                if (err) return reject(err);
                 c > 0 ? resolve(true) : resolve(false);
             });
         });
