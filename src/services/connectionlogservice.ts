@@ -58,19 +58,11 @@ class ConnectionLogService {
     }
 
     paginate(size: number, pageNo: number): Promise<PaginateResponse> {
-        return new Promise((resolve, reject) => {
-            const query = {
-                skip: size * (pageNo - 1),
-                limit: size
-            };
-            let totalPages = 0;
-            ConnectionLogModel.count(this.isHairpinnedCondition, function (err, totalCount) {
-                if (err) {
-                    return reject(err);
-                }
-                totalPages = Math.ceil(totalCount / size);
-            });
+        const getCount = (size: number) => new Promise<number>((resolve, reject) => {
+            ConnectionLogModel.count(this.isHairpinnedCondition, (err, totalCount) => err ? reject(err) : resolve(Math.ceil(totalCount / size)));
+        });
 
+        const getData = (query: any) => new Promise<Array<ConnectionLog>>((resolve, reject) => {
             ConnectionLogModel.find(this.isHairpinnedCondition, this.projectOptions, query, (err: Error, data: Array<ConnectionLog> = new Array) => {
                 if (err) {
                     return reject(err);
@@ -80,14 +72,27 @@ class ConnectionLogService {
                         item = this.finalizeLogItem(item);
                     });
 
-                    const res: PaginateResponse = {
-                        logs: data,
-                        totalPages: totalPages
-                    };
-
-                    resolve(res);
+                    resolve(data);
                 }
             }).select(this.ignoreFields);
+        });
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                const query = {
+                    skip: size * (pageNo - 1),
+                    limit: size
+                };
+                const totalPages: number = await getCount(size);
+                const logs = await getData(query);
+
+                resolve({
+                    logs,
+                    totalPages
+                });
+            } catch (e) {
+                reject(e);
+            }
         });
     }
 
