@@ -95,22 +95,18 @@ export default class WebSocketServer {
 
       ws.on("message", async (message: string) => {
         // console.log(`Received -> ${message}`);
-
-        const msgData = JSON.parse(message).message;
-
-        if (message.includes("peer_requester")) {
-          try {
-            // Extract msg data from the data received from websocket data
-            const data = JSON.parse(msgData);
-            this.queue.push({
-              data: data,
-              executor: (data: ConnectionLog, next: Function) => {
-                this.onMsgHandler(ws, data, next);
-              }
-            });
-          } catch (e) {
-            return console.error(e.message);
-          }
+        try {
+          const msgData = JSON.parse(message).message;
+          // Extract msg data from the data received from websocket data
+          const logData = JSON.parse(msgData);
+          this.queue.push({
+            data: logData,
+            executor: (data: ConnectionLog, next: Function) => {
+              this.onMsgHandler(ws, data, next);
+            }
+          });
+        } catch (e) {
+          return console.error(e.message);
         }
       });
     });
