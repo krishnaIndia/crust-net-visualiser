@@ -25,11 +25,16 @@ const updateIpFile = async () => {
 
 const generateLogHash = (log: ConnectionLog): string => {
 
-    const peerData = [log.peer_requester, log.peer_responder];
+    const peerData = [Object.assign({}, log.peer_requester), Object.assign({}, log.peer_responder)];
     peerData.sort((a, b) => {
         const num1 = Number(a.ip.split(".").map((num) => (`000${num}`).slice(-3)).join(""));
         const num2 = Number(b.ip.split(".").map((num) => (`000${num}`).slice(-3)).join(""));
         return num1 - num2;
+    });
+    peerData.forEach(peerInfo => {
+        if (typeof peerInfo.nat_type === "object") {
+            peerInfo.nat_type = "EDM_RANDOM";
+        }
     });
     const hashData = [peerData, log.tcp_hole_punch_result, log.is_direct_successful];
     const jsonData = JSON.stringify(hashData);
