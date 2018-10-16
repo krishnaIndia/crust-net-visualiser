@@ -181,11 +181,18 @@ function onClickUpdateIP() {
 function setCurrentIp(ip, cip) {
   $('#inviteIP').html(ip || 'not set');
   $('#currentInviteIP').html(cip || 'not set');
+  var downloadApps = $('#downloadApps');
   var updateIpBtn = $('#updateIp');
   if (!ip) {
     updateIpBtn.html('Set Registered IP')
   }
-  updateIpBtn.prop('disabled', (ip === cip));
+  var isIPEqual = (ip === cip);
+  updateIpBtn.prop('disabled', isIPEqual);
+  if(!(ip && isIPEqual)) {
+    downloadApps.hide();
+  } else {
+    downloadApps.show();
+  }
 }
 
 var parsedURL = new URL(location.href);
