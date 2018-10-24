@@ -35,6 +35,8 @@ const generateLogHash = (log: ConnectionLog): string => {
         if (typeof peerInfo.nat_type === "object") {
             peerInfo.nat_type = "EDM_RANDOM";
         }
+        peerInfo.id = 0;
+        peerInfo.name = "";
     });
     const hashData = [peerData, log.tcp_hole_punch_result, log.udp_hole_punch_result, log.is_direct_successful];
     const jsonData = JSON.stringify(hashData);
