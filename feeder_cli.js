@@ -51,9 +51,11 @@ ws.on('open', () => {
     console.log('connected to ws server');
     const logs = sendIterative(args['count'] || 100);
     logs.forEach((log, i) => {
-        if (args['showlog'] === "true")
-            console.log(JSON.stringify(log));
-        ws.send(JSON.stringify(log), (err) => error(i, err));
+        ws.send(JSON.stringify(log), (err) => {
+            error(i, err);
+            if (args['showlog'] === "true")
+                console.log(`${JSON.stringify(log)}\n`);
+        });
     }
     );
 });
