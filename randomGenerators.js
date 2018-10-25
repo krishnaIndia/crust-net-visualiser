@@ -1,4 +1,7 @@
 
+var startIpRange = "97.238.241.11";
+var endIpRange = "97.238.241.30";
+
 var operationSystems = [
     "linux",
     "macos",
@@ -18,8 +21,11 @@ const randomNatType = () => {
     return natTypes[Math.floor(Math.random() * natTypes.length)];
 }
 
-const randomIP = () => {
-    return (Math.floor(Math.random() * 255) + 1) + "." + (Math.floor(Math.random() * 255) + 0) + "." + (Math.floor(Math.random() * 255) + 0) + "." + (Math.floor(Math.random() * 255) + 0);
+const randomIP = (startIp = startIpRange, endIp = endIpRange) => {
+    const startIpNum = Number(startIp.split(".").map((num) => (`000${num}`).slice(-3)).join(""));
+    const endIpNum = Number(endIp.split(".").map((num) => (`000${num}`).slice(-3)).join(""));
+    var endBit = startIp.split(".")[3];
+    return startIp.replace(endBit, parseInt(endBit) + (Math.floor(Math.random() * (endIpNum - startIpNum)) + 1));
 }
 
 const randomNumber = () => {

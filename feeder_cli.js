@@ -11,7 +11,7 @@ const sendIterative = (count) => {
         const peer_requester = {
             id: random.randomNumber(),
             name: random.randomName(),
-            ip: random.randomIP(),
+            ip: random.randomIP(args["startIp"], args["endIp"]),
             nat_type: random.randomNatType(),
             os: random.randomOS(),
         }
@@ -19,7 +19,7 @@ const sendIterative = (count) => {
         const peer_responder = {
             id: random.randomNumber(),
             name: random.randomName(),
-            ip: random.randomIP(),
+            ip: random.randomIP(args["startIp"], args["endIp"]),
             nat_type: random.randomNatType(),
             os: random.randomOS(),
         }
