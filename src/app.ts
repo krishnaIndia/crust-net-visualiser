@@ -162,10 +162,10 @@ app.get("/api/stats", async (req, res) => {
       const list = await connectionLogService.listBetweenDates(startDate, endDate);
       res.send(list);
     }
-    else if (req.query.pageNo) {
-      const pageNo = parseInt(req.query.pageNo);
+    else if (req.query.offset) {
+      const offset = parseInt(req.query.offset);
       const size = parseInt(req.query.size);
-      const list = await connectionLogService.paginate(size, pageNo);
+      const list = await connectionLogService.paginate(size, offset);
       res.send(list);
     }
     else {

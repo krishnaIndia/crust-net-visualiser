@@ -57,9 +57,9 @@ class ConnectionLogService {
         });
     }
 
-    paginate(size: number, pageNo: number): Promise<PaginateResponse> {
-        const getCount = (size: number) => new Promise<number>((resolve, reject) => {
-            ConnectionLogModel.count(this.isHairpinnedCondition, (err, totalCount) => err ? reject(err) : resolve(Math.ceil(totalCount / size)));
+    paginate(size: number, startIndex: number): Promise<PaginateResponse> {
+        const getCount = () => new Promise<number>((resolve, reject) => {
+            ConnectionLogModel.count(this.isHairpinnedCondition, (err, totalCount) => err ? reject(err) : resolve(totalCount));
         });
 
         const getData = (query: any) => new Promise<Array<ConnectionLog>>((resolve, reject) => {
@@ -80,15 +80,15 @@ class ConnectionLogService {
         return new Promise(async (resolve, reject) => {
             try {
                 const query = {
-                    skip: size * (pageNo - 1),
+                    skip: startIndex,
                     limit: size
                 };
-                const totalPages: number = await getCount(size);
+                const total: number = await getCount();
                 const logs = await getData(query);
 
                 resolve({
                     logs,
-                    totalPages
+                    total
                 });
             } catch (e) {
                 reject(e);

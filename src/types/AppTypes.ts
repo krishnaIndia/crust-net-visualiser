@@ -85,7 +85,7 @@ interface User {
 
 interface PaginateResponse {
     logs: Array<ConnectionLog>;
-    totalPages: number;
+    total: number;
 }
 
 export { TimeSpent, Success, NatTraversal, Peer, ConnectionLog, User, GeoInfo, PaginateResponse, GeoFetchError, ReservedIp, IpGeoInfo };
