@@ -1,4 +1,4 @@
-
+const crypto = require('crypto');
 var startIpRange = "97.238.241.11";
 var endIpRange = "97.238.241.30";
 
@@ -28,8 +28,10 @@ const randomIP = (startIp = startIpRange, endIp = endIpRange) => {
     return startIp.replace(endBit, parseInt(endBit) + (Math.floor(Math.random() * (endIpNum - startIpNum)) + 1));
 }
 
-const randomNumber = () => {
-    return Math.floor(Math.random() * 99999);
+const randomId = () => {
+    const buf = new Buffer(32);
+    crypto.randomFillSync(buf);
+    return [...buf];
 }
 
 const randomBoolean = () => {
@@ -53,6 +55,6 @@ module.exports = {
     randomIP,
     randomName,
     randomNatType,
-    randomNumber,
+    randomId,
     randomOS
 }
