@@ -21,5 +21,8 @@
         "templatePath": "/home/qa/p2p/template.json"
     },
     "crustWsPort": 55555,
-    "dashboardWsPort": 8090
+    "dashboardWsPort": 8090,
+    "clientCache": {
+        "name": "dash-v1"
+    }
 }

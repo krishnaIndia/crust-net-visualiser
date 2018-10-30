@@ -74,6 +74,10 @@ app.use(lusca.xssProtection(true));
 //   next();
 // });
 
+app.get('/cacheConfig', (req, res) => {
+    res.send(config.clientCache);
+});
+
 if (config.isMaidsafeOnly) {
   app.get("/", function (req, res, next) {
     if (req.path.startsWith("/auth") || req.path.startsWith("/update_ip"))
