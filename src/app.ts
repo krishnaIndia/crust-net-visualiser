@@ -74,7 +74,7 @@ app.use(lusca.xssProtection(true));
 //   next();
 // });
 
-app.get('/cacheConfig', (req, res) => {
+app.get("/cacheConfig", (req, res) => {
     res.send(config.clientCache);
 });
 
