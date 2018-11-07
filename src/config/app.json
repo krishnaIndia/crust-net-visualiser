@@ -14,7 +14,7 @@
         "TEST-1"
     ],
     "authReturnUrl": "https://crusttest.maidsafe.net/auth/discourse/callback",
-    "forumRedirectUrl": "https://safenetforum.org/t/conclusion-of-crust-test-v1/25926",
+    "forumRedirectUrl": "https://safenetforum.org/t/conclusion-of-crust-test-v2/26168",
     "whitelistIpFile": {
         "path": "/home/qa/p2p/",
         "filename": "proxy.crust.config",
